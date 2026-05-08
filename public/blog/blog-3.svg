@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+  <defs>
+    <linearGradient id="g3" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#0F1A0F"/>
+      <stop offset="1" stop-color="#52B788"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#g3)"/>
+  <circle cx="620" cy="160" r="95" fill="rgba(255,255,255,0.18)"/>
+  <circle cx="200" cy="380" r="120" fill="rgba(255,255,255,0.12)"/>
+  <rect x="80" y="310" width="360" height="18" rx="9" fill="rgba(255,255,255,0.55)"/>
+  <rect x="80" y="340" width="260" height="14" rx="7" fill="rgba(255,255,255,0.45)"/>
+  <text x="80" y="270" font-family="Arial, sans-serif" font-size="34" fill="#FFFFFF" font-weight="700">
+    River Cleanup
+  </text>
+</svg>

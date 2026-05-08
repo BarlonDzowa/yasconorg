@@ -1,0 +1,8 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://www.yascon.org
+# Sitemaps
+Sitemap: https://www.yascon.org/sitemap.xml

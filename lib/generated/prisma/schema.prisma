@@ -1,0 +1,183 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// Enums
+// ───────────────────────────────────────────────────────────────────────────
+
+enum CmsRole {
+  super_admin
+  regional_admin
+}
+
+enum CmsRegion {
+  national
+  northern
+  central
+  southern
+  eastern
+}
+
+enum CmsLevel {
+  national
+  regional
+}
+
+enum CmsContentType {
+  news
+  announcement
+  press_briefing
+  blog
+  video
+}
+
+enum PublishStatus {
+  draft
+  published
+  archived
+}
+
+enum CmsTeamType {
+  management
+  board
+}
+
+enum CmsMediaType {
+  gallery
+  document
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// Users & Sessions
+// ───────────────────────────────────────────────────────────────────────────
+
+model CmsUser {
+  id           Int       @id @default(autoincrement())
+  name         String
+  email        String    @unique
+  passwordHash String    @map("password_hash")
+  role         CmsRole
+  region       CmsRegion
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  // Single relation for ALL content — clean and scalable
+  createdContent CmsContent[] @relation("CreatedBy")
+  updatedContent CmsContent[] @relation("UpdatedBy")
+
+  sessions     CmsSession[]
+  createdTeams CmsTeamMember[] @relation("CreatedBy")
+  updatedTeams CmsTeamMember[] @relation("UpdatedBy")
+  createdMedia CmsMediaItem[]  @relation("CreatedBy")
+  updatedMedia CmsMediaItem[]  @relation("UpdatedBy")
+
+  @@map("cms_users")
+}
+
+model CmsSession {
+  id        Int      @id @default(autoincrement())
+  tokenHash String   @unique @map("token_hash")
+  userId    Int      @map("user_id")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      CmsUser  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("cms_sessions")
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// Unified Content Model  (replaces CmsNews, CmsBlog, CmsAnnouncement,
+//                         CmsPressBreifing, CmsVideo)
+// ───────────────────────────────────────────────────────────────────────────
+
+model CmsContent {
+  id          Int            @id @default(autoincrement())
+  // Discriminator — what kind of content this is
+  contentType CmsContentType @map("content_type")
+
+  title       String
+  slug        String  @unique
+  excerpt     String  @default("")
+  richContent String  @default("") @map("rich_content")
+  coverImage  String? @map("cover_image")
+
+  // Video-only fields (null for other types)
+  videoUrl      String? @map("video_url")
+  videoDuration Int?    @map("video_duration")
+
+  region CmsRegion
+  level  CmsLevel  @default(national)
+
+  status      PublishStatus @default(draft)
+  publishedAt DateTime?     @map("published_at")
+
+  createdById Int     @map("created_by")
+  createdBy   CmsUser @relation("CreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  updatedById Int     @map("updated_by")
+  updatedBy   CmsUser @relation("UpdatedBy", fields: [updatedById], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([contentType, region, status, publishedAt])
+  @@index([slug])
+  @@map("cms_content")
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// Team Members
+// ───────────────────────────────────────────────────────────────────────────
+
+model CmsTeamMember {
+  id          Int           @id @default(autoincrement())
+  name        String
+  slug        String        @unique
+  role        String
+  joined      String?
+  avatar      String?
+  focus       String
+  teamType    CmsTeamType
+  region      CmsRegion?
+  status      PublishStatus @default(draft)
+  publishedAt DateTime?     @map("published_at")
+  createdById Int           @map("created_by")
+  updatedById Int           @map("updated_by")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  createdBy   CmsUser       @relation("CreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  updatedBy   CmsUser       @relation("UpdatedBy", fields: [updatedById], references: [id], onDelete: Restrict)
+
+  @@index([region, teamType, status, publishedAt])
+  @@map("cms_team_members")
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// Media Items
+// ───────────────────────────────────────────────────────────────────────────
+
+model CmsMediaItem {
+  id          Int           @id @default(autoincrement())
+  title       String
+  slug        String        @unique
+  description String?
+  mediaType   CmsMediaType
+  fileUrl     String        @map("file_url")
+  coverImage  String?       @map("cover_image")
+  region      CmsRegion?
+  status      PublishStatus @default(draft)
+  publishedAt DateTime?     @map("published_at")
+  createdById Int           @map("created_by")
+  updatedById Int           @map("updated_by")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  createdBy   CmsUser       @relation("CreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  updatedBy   CmsUser       @relation("UpdatedBy", fields: [updatedById], references: [id], onDelete: Restrict)
+
+  @@index([region, mediaType, status, publishedAt])
+  @@map("cms_media_items")
+}
