@@ -5,7 +5,7 @@ import { canCreateOrEditContent } from "@/lib/cms/permissions";
 import { getMediaItemById, updateMediaItem, deleteMediaItem } from "@/lib/cms/service";
 import type { ContentStatus } from "@/lib/cms/service";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     await ensureCmsSchema();
     const id = parseInt(params.id);
