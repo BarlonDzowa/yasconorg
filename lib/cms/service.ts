@@ -122,8 +122,8 @@ export async function createContent(data: {
   slug: string;
   excerpt: string;
   richContent: string;
-  coverImage?: { url: string } | string | null;
-  videoUrl?: { url: string } | string | null;
+  coverImage?: { url: string } | null;
+  videoUrl?: { url: string } | null;
   videoDuration?: number | null;
   contentType: CmsContentType;
   region: ContentRegion;
@@ -153,8 +153,8 @@ export async function updateContent(
     slug: string;
     excerpt: string;
     richContent: string;
-    coverImage?: { url: string } | string | null;
-    videoUrl?: { url: string } | string | null;
+    coverImage?: { url: string } | null;
+    videoUrl?: { url: string } | null;
     videoDuration?: number | null;
     region: ContentRegion;
     level: "national" | "regional";
@@ -264,7 +264,7 @@ export async function createTeamMember(data: {
   slug: string;
   role: string;
   joined?: string | null;
-  avatar?: { url: string } | string | null;
+  avatar?: { url: string } | null;
   focus: string;
   teamType: "management" | "board";
   region?: ContentRegion | null;

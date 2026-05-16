@@ -215,9 +215,9 @@ export default function Footer() {
               </h4>
               <ul>
                 {links.map((link) => (
-                  <li key={link.label}>
-                    <Link href={link.href} className="footer-col-link">
-                      {link.label}
+                  <li key={link?.label}>
+                    <Link href={link?.href || "#"} className="footer-col-link">
+                      {link?.label}
                     </Link>
                   </li>
                 ))}
