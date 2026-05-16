@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { CMS_SESSION_COOKIE } from "@/lib/cms/constants";
-import { getSessionUserByToken, getPrismaClient } from "@/lib/cms/auth";
-import { ensureCmsSchema } from "@/lib/cms/db";
+import { getSessionUserByToken } from "@/lib/cms/auth";
+import { ensureCmsSchema, getPrismaClient } from "@/lib/cms/db";
 
 export async function GET(req: NextRequest) {
   try {
