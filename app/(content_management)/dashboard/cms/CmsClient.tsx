@@ -488,7 +488,7 @@ export default function CmsClient({ initialUser }: { initialUser: CmsUserRecord 
                 { label: "Total Items", value: stats.total, color: "bg-blue-50 border-blue-200" },
                 { label: "Published", value: stats.published, color: "bg-emerald-50 border-emerald-200" },
                 { label: "Drafts", value: stats.draft, color: "bg-amber-50 border-amber-200" },
-                { label: "Region", value: user?.region.charAt(0).toUpperCase() + user?.region.slice(1), color: "bg-purple-50 border-purple-200" },
+                { label: "Region", value: user?.region? user.region.charAt(0).toUpperCase() + user?.region.slice(1) : "N/A", color: "bg-purple-50 border-purple-200" },
               ].map((s) => (
                 <div key={s.label} className={`border rounded-xl p-5 ${s.color}`}>
                   <p className="text-xs text-slate-500 mb-1">{s.label}</p>
