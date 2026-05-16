@@ -707,7 +707,15 @@ export default function SouthernRegionPage() {
             {idx === currentImage && (
               <div className="relative inset-0 flex items-center z-10 pt-24">
                 <div className="max-w-7xl mx-auto px-6 sm:px-8 w-full">
-                  <div className="max-w-2xl">
+                  {/* ── frosted-glass blur panel wrapping all hero text ── */}
+                  <div
+                    className="max-w-2xl rounded-2xl px-8 py-8"
+                    style={{
+                      background: "rgba(0, 0, 0, 0.35)",
+                      backdropFilter: "blur(6px)",
+                      WebkitBackdropFilter: "blur(6px)",
+                    }}
+                  >
                     <div className="slide-label mb-5">
                       <span
                         className="inline-flex items-center gap-2 font-bold uppercase px-5 py-2.5"
