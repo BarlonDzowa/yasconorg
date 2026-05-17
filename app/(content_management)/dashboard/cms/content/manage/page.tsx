@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import {
   Plus, Trash2, Edit, Eye, EyeOff, Loader2, X, CheckCircle, AlertCircle,
   FileText, ArrowLeft, Filter
@@ -47,10 +46,10 @@ export default function ContentManagePage() {
   const [deleting, setDeleting] = useState<number | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<ContentItem | null>(null);
 
-  const showAlert = (message: string, type: "success" | "error") => setAlert({ message, type });
+  const showAlert = (message: string, type: "success" | "error") =>
+    setAlert({ message, type });
 
-  const load = useCallback(async () => { 
-    console.log('ContentManage - Loading items with filters:', {typeFilter, statusFilter}); 
+  const load = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams({ status: "all", limit: "100" });
@@ -92,7 +91,10 @@ export default function ContentManagePage() {
         body: JSON.stringify({ status: newStatus }),
       });
       if (!res.ok) throw new Error((await res.json()).error || "Update failed");
-      showAlert(`"${item.title}" ${newStatus === "published" ? "published" : "unpublished"}.`, "success");
+      showAlert(
+        `"${item.title}" ${newStatus === "published" ? "published" : "unpublished"}.`,
+        "success"
+      );
       void load();
     } catch (err) {
       showAlert(err instanceof Error ? err.message : "Update failed", "error");
@@ -100,24 +102,30 @@ export default function ContentManagePage() {
   };
 
   const filtered = items.filter((i) => typeFilter === "all" || i.contentType === typeFilter);
-
-  const uniqueTypes = Array.from(new Set(items.map(i => i.contentType)));
+  const uniqueTypes = Array.from(new Set(items.map((i) => i.contentType)));
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6">
-      <div className="max-w-5xl mx-auto">
-        <button onClick={() => router.back()} className="flex items-center gap-2 text-slate-500 hover:text-slate-800 mb-6 text-sm transition">
+    <div className="min-h-screen bg-slate-50 p-4 md:p-6">
+      <div className="max-w-6xl mx-auto">
+        <button
+          onClick={() => router.back()}
+          className="flex items-center gap-2 text-slate-500 hover:text-slate-800 mb-6 text-sm transition"
+        >
           <ArrowLeft size={16} /> Back
         </button>
 
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-start justify-between gap-4 mb-6 flex-wrap">
           <div>
-            <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2"><FileText size={22} /> Content</h1>
-            <p className="text-slate-500 text-sm mt-1">Manage all content across news, blogs, announcements, videos, etc.</p>
+            <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+              <FileText size={22} /> Content
+            </h1>
+            <p className="text-slate-500 text-sm mt-1">
+              Manage all content across news, blogs, announcements, videos, etc.
+            </p>
           </div>
           <button
             onClick={() => router.push("/dashboard/cms/content/create")}
-            className="flex items-center gap-2 px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 text-sm font-semibold transition"
+            className="flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 text-sm font-semibold transition"
           >
             <Plus size={16} /> New Content
           </button>
@@ -131,12 +139,9 @@ export default function ContentManagePage() {
           </div>
         )}
 
-        {/* Filters */}
-        <div className="flex gap-3 mb-4 flex-wrap">
-          <div className="flex items-center gap-2">
-            <Filter size={14} className="text-slate-400" />
-            <span className="text-xs text-slate-500 font-medium">Type:</span>
-          </div>
+        <div className="flex gap-2 mb-4 flex-wrap items-center">
+          <Filter size={14} className="text-slate-400" />
+          <span className="text-xs text-slate-500 font-medium">Type:</span>
           <button onClick={() => setTypeFilter("all")}
             className={`px-3 py-1 rounded-full text-xs font-semibold transition ${typeFilter === "all" ? "bg-green-700 text-white" : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"}`}>
             All
@@ -147,9 +152,7 @@ export default function ContentManagePage() {
               {TYPE_LABEL[t] || t}
             </button>
           ))}
-          <div className="ml-4 flex items-center gap-2">
-            <span className="text-xs text-slate-500 font-medium">Status:</span>
-          </div>
+          <span className="ml-2 text-xs text-slate-500 font-medium">Status:</span>
           {(["all", "published", "draft", "archived"] as const).map((s) => (
             <button key={s} onClick={() => setStatusFilter(s)}
               className={`px-3 py-1 rounded-full text-xs font-semibold capitalize transition ${statusFilter === s ? "bg-slate-700 text-white" : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"}`}>
@@ -158,8 +161,7 @@ export default function ContentManagePage() {
           ))}
         </div>
 
-        {/* Table */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-x-auto">
           {loading ? (
             <div className="flex items-center justify-center py-20">
               <Loader2 size={28} className="animate-spin text-slate-300" />
@@ -173,21 +175,19 @@ export default function ContentManagePage() {
               </button>
             </div>
           ) : (
-            <table className="w-full">
+            <table className="w-full min-w-[700px]">
               <thead className="bg-slate-50 border-b border-slate-200">
                 <tr>
                   <th className="text-left text-xs font-semibold text-slate-500 px-4 py-3">Title</th>
-                  <th className="text-left text-xs font-semibold text-slate-500 px-4 py-3 hidden md:table-cell">Type</th>
-                  <th className="text-left text-xs font-semibold text-slate-500 px-4 py-3 hidden lg:table-cell">Region</th>
-                  <th className="text-left text-xs font-semibold text-slate-500 px-4 py-3 hidden lg:table-cell">Status</th>
+                  <th className="text-left text-xs font-semibold text-slate-500 px-4 py-3">Type</th>
+                  <th className="text-left text-xs font-semibold text-slate-500 px-4 py-3">Region</th>
+                  <th className="text-left text-xs font-semibold text-slate-500 px-4 py-3">Status</th>
                   <th className="text-left text-xs font-semibold text-slate-500 px-4 py-3">Updated</th>
-                  <th className="text-right text-xs font-semibold text-slate-500 px-4 py-3">Actions</th>
+                  <th className="text-right text-xs font-semibold text-slate-500 px-4 py-3 w-32">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {filtered.map((i) => {
-                  return (
-                
+                {filtered.map((i) => (
                   <tr key={i.id} className="hover:bg-slate-50 transition">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
@@ -195,59 +195,48 @@ export default function ContentManagePage() {
                           <span className="text-white font-bold text-xs">{i.title[0]}</span>
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-semibold text-slate-800 truncate">{i.title}</p>
-                          <p className="text-xs text-slate-400 truncate md:hidden">{TYPE_LABEL[i.contentType] || i.contentType}</p>
-                          <p className="text-xs text-slate-500">{i.excerpt.slice(0, 60)}...</p>
+                          <p className="text-sm font-semibold text-slate-800 truncate max-w-[200px]">{i.title}</p>
+                          <p className="text-xs text-slate-500 truncate max-w-[200px]">{i.excerpt.slice(0, 60)}...</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 hidden md:table-cell">
-                      <span className={`px-2 py-0.5 rounded text-xs font-semibold ${i.contentType === "news" ? "bg-blue-100 text-blue-700" : "bg-purple-100 text-purple-700"}`}>
+                    <td className="px-4 py-3">
+                      <span className={`px-2 py-0.5 rounded text-xs font-semibold whitespace-nowrap ${i.contentType === "news" ? "bg-blue-100 text-blue-700" : "bg-purple-100 text-purple-700"}`}>
                         {TYPE_LABEL[i.contentType] || i.contentType}
                       </span>
                     </td>
-                    <td className="px-4 py-3 hidden lg:table-cell">
-                      <span className="text-xs text-slate-500 capitalize">{i.region}</span>
+                    <td className="px-4 py-3">
+                      <span className="text-xs text-slate-500 capitalize whitespace-nowrap">{i.region}</span>
                     </td>
-                    <td className="px-4 py-3 hidden lg:table-cell">
-                      <span className={`px-2 py-0.5 rounded text-xs font-semibold capitalize ${STATUS_STYLE[i.status] || STATUS_STYLE.draft}`}>
+                    <td className="px-4 py-3">
+                      <span className={`px-2 py-0.5 rounded text-xs font-semibold capitalize whitespace-nowrap ${STATUS_STYLE[i.status] || STATUS_STYLE.draft}`}>
                         {i.status}
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="text-xs text-slate-500">{new Date(i.updatedAt).toLocaleDateString()}</span>
+                      <span className="text-xs text-slate-500 whitespace-nowrap">{new Date(i.updatedAt).toLocaleDateString()}</span>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3 w-32">
                       <div className="flex items-center justify-end gap-1">
-                        <button
-                          onClick={() => handleToggleStatus(i)}
+                        <button onClick={() => handleToggleStatus(i)}
                           title={i.status === "published" ? "Unpublish" : "Publish"}
-                          className="p-1.5 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-700 transition"
-                        >
+                          className="p-1.5 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-700 transition">
                           {i.status === "published" ? <EyeOff size={15} /> : <Eye size={15} />}
                         </button>
-                        <button
-                          onClick={() => { 
-                            console.log('Navigate to edit URL:', `/dashboard/cms/content/edit/${i.id}`, 'full item:', i); 
-                            router.push(`/dashboard/cms/content/edit/${i.id}`); 
-                          }}
+                        <button onClick={() => router.push(`/dashboard/cms/content/edit/${i.id}`)}
                           title="Edit"
-                          className="p-1.5 rounded hover:bg-blue-50 text-blue-500 hover:text-blue-700 transition"
-                        >
+                          className="p-1.5 rounded hover:bg-blue-50 text-blue-500 hover:text-blue-700 transition">
                           <Edit size={15} />
                         </button>
-                        <button
-                          onClick={() => setConfirmDelete(i)}
+                        <button onClick={() => setConfirmDelete(i)}
                           title="Delete"
-                          className="p-1.5 rounded hover:bg-red-50 text-red-400 hover:text-red-600 transition"
-                        >
+                          className="p-1.5 rounded hover:bg-red-50 text-red-400 hover:text-red-600 transition">
                           <Trash2 size={15} />
                         </button>
                       </div>
                     </td>
                   </tr>
-                  );
-                })}
+                ))}
               </tbody>
             </table>
           )}
@@ -255,7 +244,6 @@ export default function ContentManagePage() {
         <p className="text-xs text-slate-400 mt-2">{filtered.length} item{filtered.length !== 1 ? "s" : ""}</p>
       </div>
 
-      {/* Confirm Delete Modal */}
       {confirmDelete && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full">
@@ -264,11 +252,8 @@ export default function ContentManagePage() {
               Are you sure you want to delete <strong>{confirmDelete.title}</strong>? This cannot be undone.
             </p>
             <div className="flex gap-3">
-              <button
-                onClick={() => handleDelete(confirmDelete)}
-                disabled={deleting === confirmDelete.id}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 text-sm font-semibold"
-              >
+              <button onClick={() => handleDelete(confirmDelete)} disabled={deleting === confirmDelete.id}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 text-sm font-semibold">
                 {deleting === confirmDelete.id ? <Loader2 size={15} className="animate-spin" /> : <Trash2 size={15} />}
                 Delete
               </button>
@@ -282,4 +267,3 @@ export default function ContentManagePage() {
     </div>
   );
 }
-
